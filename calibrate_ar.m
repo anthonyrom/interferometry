@@ -1,5 +1,8 @@
 function [Vmax, Vmin] = calibrate_ar(lkn_address, pps_address, min_volt, max_volt, res)
 
+clear
+instrreset
+
 V = min_volt;
 i = 1;
 
@@ -37,15 +40,16 @@ end
 plot(Vin, Vout);
 
 % Store maximum and minimum output voltages
-Vmax = max(Vout);
-Vmin = min(Vout);
+[~, maxInd] = max(Vout);
+[~, minInd] = min(Vout);
 
-% Return voltage to minimum value
-V = min_volt;
-fprintf(pps, sprintf('%s %f', 'VSET', V));
+Vmax = Vin(maxInd);
+Vmin = Vin(minInd);
+
+% Return piezo input voltage to zero
+fprintf(pps, 'VSET 0');
 
 % Close GPIB connections
-fclose(lkn);
-fclose(pps);
+instrreset
 
 end
